@@ -7,6 +7,7 @@ export const personalSchema = z.object({
   email: z.string(),
   linkedin: z.string(),
   github: z.string(),
+  availability: z.string().default(""),
 });
 
 export const educationEntrySchema = z.object({
@@ -15,6 +16,8 @@ export const educationEntrySchema = z.object({
   location: z.string(),
   degree: z.string(),
   dateRange: z.string(),
+  dateRangeStart: z.string().default(""),
+  dateRangeEnd: z.string().default(""),
   relevantCourses: z.string().default(""),
   visible: z.boolean().default(true),
 });
@@ -23,6 +26,8 @@ export const experienceEntrySchema = z.object({
   id: z.string(),
   role: z.string(),
   dateRange: z.string(),
+  dateRangeStart: z.string().default(""),
+  dateRangeEnd: z.string().default(""),
   company: z.string(),
   location: z.string(),
   bullets: z.array(z.string()),
@@ -34,6 +39,8 @@ export const projectEntrySchema = z.object({
   name: z.string(),
   techStack: z.string(),
   dateRange: z.string(),
+  dateRangeStart: z.string().default(""),
+  dateRangeEnd: z.string().default(""),
   bullets: z.array(z.string()),
   visible: z.boolean().default(true),
 });
@@ -44,7 +51,7 @@ export const skillCategorySchema = z.object({
   items: z.string(),
 });
 
-export const sectionOrderSchema = z.array(z.enum(["education", "experience", "projects", "skills"]));
+export const sectionOrderSchema = z.array(z.enum(["availability", "education", "experience", "projects", "skills"]));
 
 export const themeSchema = z.object({
   font: z.enum(["default", "roboto", "sourcesanspro"]).default("default"),
@@ -79,6 +86,7 @@ export const defaultPersonal: Personal = {
   email: "",
   linkedin: "",
   github: "",
+  availability: "",
 };
 
 export const defaultEducationEntry = (): EducationEntry => ({
@@ -87,6 +95,8 @@ export const defaultEducationEntry = (): EducationEntry => ({
   location: "",
   degree: "",
   dateRange: "",
+  dateRangeStart: "",
+  dateRangeEnd: "",
   relevantCourses: "",
   visible: true,
 });
@@ -95,6 +105,8 @@ export const defaultExperienceEntry = (): ExperienceEntry => ({
   id: id(),
   role: "",
   dateRange: "",
+  dateRangeStart: "",
+  dateRangeEnd: "",
   company: "",
   location: "",
   bullets: [""],
@@ -106,6 +118,8 @@ export const defaultProjectEntry = (): ProjectEntry => ({
   name: "",
   techStack: "",
   dateRange: "",
+  dateRangeStart: "",
+  dateRangeEnd: "",
   bullets: [""],
   visible: true,
 });
@@ -116,7 +130,7 @@ export const defaultSkillCategory = (): SkillCategory => ({
   items: "",
 });
 
-export const defaultSectionOrder: SectionOrder = ["education", "experience", "projects", "skills"];
+export const defaultSectionOrder: SectionOrder = ["availability", "education", "experience", "projects", "skills"];
 
 export const defaultResume: ResumeData = {
   personal: { ...defaultPersonal },

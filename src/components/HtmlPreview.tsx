@@ -3,6 +3,7 @@
 import React from "react";
 import type { ResumeData } from "@/types/resume";
 import { latexToReact } from "@/lib/richtext-latex";
+import { formatDate, formatDateRange } from "@/lib/date-utils";
 
 const sectionHeading =
   "text-xs font-bold text-slate-700 uppercase tracking-wider border-b border-slate-300 pb-0.5 mb-2";
@@ -24,6 +25,18 @@ export function HtmlPreview({ data }: { data: ResumeData }) {
   const contactLine = contactParts.join(" | ");
 
   function renderSection(key: (typeof sectionOrder)[number]) {
+    if (key === "availability") {
+      const avail = personal.availability;
+      if (!avail) return null;
+      return (
+        <section key="availability" className="mb-3">
+          <h3 className={sectionHeading}>Availability</h3>
+          <p className="text-sm text-slate-700">
+            {formatDate(avail)}
+          </p>
+        </section>
+      );
+    }
     if (key === "education") {
       return (
         <section key="education" className="mb-3">
@@ -45,7 +58,7 @@ export function HtmlPreview({ data }: { data: ResumeData }) {
                       )}
                     </div>
                     <span className="text-slate-600 shrink-0">
-                      {renderInline(e.dateRange || "", `edu-${e.id}-date`)}
+                      {formatDateRange(e.dateRangeStart, e.dateRangeEnd, e.dateRange || "")}
                     </span>
                   </div>
                   {e.degree && (
@@ -78,7 +91,7 @@ export function HtmlPreview({ data }: { data: ResumeData }) {
                       {renderInline(e.role || "—", `exp-${e.id}-role`)}
                     </span>
                     <span className="text-slate-600 shrink-0">
-                      {renderInline(e.dateRange || "", `exp-${e.id}-date`)}
+                      {formatDateRange(e.dateRangeStart, e.dateRangeEnd, e.dateRange || "")}
                     </span>
                   </div>
                   <div className="text-sm text-slate-600 italic mb-1">
@@ -112,7 +125,7 @@ export function HtmlPreview({ data }: { data: ResumeData }) {
                       {renderInline(p.name || "—", `proj-${p.id}-name`)}
                     </span>
                     <span className="text-slate-600 shrink-0">
-                      {renderInline(p.dateRange || "", `proj-${p.id}-date`)}
+                      {formatDateRange(p.dateRangeStart, p.dateRangeEnd, p.dateRange || "")}
                     </span>
                   </div>
                   {p.techStack && (

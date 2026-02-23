@@ -32,12 +32,12 @@ export function RichTextInput({
   }, [html, focused]);
 
   return (
-    <div className="relative">
+    <div className="relative min-w-0 w-full">
       <div
         ref={ref}
         contentEditable
         suppressContentEditableWarning
-        className={className}
+        className={className + " min-w-0 w-full"}
         onFocus={(e) => {
           setFocused(true);
           onFocus?.(e);

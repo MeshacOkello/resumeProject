@@ -28,7 +28,14 @@ function load(): ResumeData | null {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
-    return { ...defaultResume, ...parsed } as ResumeData;
+    const data = { ...defaultResume, ...parsed } as ResumeData;
+    if (data.sectionOrder && !data.sectionOrder.includes("availability")) {
+      const expIdx = data.sectionOrder.indexOf("experience");
+      const before = expIdx >= 0 ? data.sectionOrder.slice(0, expIdx) : data.sectionOrder;
+      const after = expIdx >= 0 ? data.sectionOrder.slice(expIdx) : [];
+      data.sectionOrder = [...before, "availability", ...after] as typeof data.sectionOrder;
+    }
+    return data;
   } catch {
     return null;
   }

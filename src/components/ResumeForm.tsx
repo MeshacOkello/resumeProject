@@ -154,20 +154,46 @@ export const ResumeForm = forwardRef<ResumeFormHandle, { data: FormData; onChang
                 </button>
                 <GripVertical className="w-4 h-4 text-sky-400" />
                 <input type="hidden" {...register(`education.${i}.school`)} />
-                <RichTextInput value={values.education?.[i]?.school ?? ""} onChange={(v) => setValue(`education.${i}.school` as any, v)} onFocus={onFocusField(`education.${i}.school`)} placeholder="School" className="flex-1 rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+                <RichTextInput value={values.education?.[i]?.school ?? ""} onChange={(v) => setValue(`education.${i}.school` as any, v)} onFocus={onFocusField(`education.${i}.school`)} placeholder="School" className="flex-1 min-w-[140px] rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
                 <button type="button" onClick={() => { education.remove(i); syncNow(); }} className="text-sky-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
               </div>
               <input type="hidden" {...register(`education.${i}.location`)} />
               <RichTextInput value={values.education?.[i]?.location ?? ""} onChange={(v) => setValue(`education.${i}.location` as any, v)} onFocus={onFocusField(`education.${i}.location`)} placeholder="Location" className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
               <input type="hidden" {...register(`education.${i}.degree`)} />
               <RichTextInput value={values.education?.[i]?.degree ?? ""} onChange={(v) => setValue(`education.${i}.degree` as any, v)} onFocus={onFocusField(`education.${i}.degree`)} placeholder="Degree" className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
-              <input type="hidden" {...register(`education.${i}.dateRange`)} />
-              <RichTextInput value={values.education?.[i]?.dateRange ?? ""} onChange={(v) => setValue(`education.${i}.dateRange` as any, v)} onFocus={onFocusField(`education.${i}.dateRange`)} placeholder="e.g. Aug 2018 -- May 2021" className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+              <div className="flex gap-2">
+                <div className="flex-1 min-w-0">
+                  <label className="text-[10px] text-slate-500 block mb-0.5">From</label>
+                  <input
+                    type="date"
+                    {...register(`education.${i}.dateRangeStart`)}
+                    className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <label className="text-[10px] text-slate-500 block mb-0.5">To</label>
+                  <input
+                    type="date"
+                    {...register(`education.${i}.dateRangeEnd`)}
+                    className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+              </div>
               <input type="hidden" {...register(`education.${i}.relevantCourses`)} />
               <RichTextInput value={values.education?.[i]?.relevantCourses ?? ""} onChange={(v) => setValue(`education.${i}.relevantCourses` as any, v)} onFocus={onFocusField(`education.${i}.relevantCourses`)} placeholder="Relevant courses (e.g. Data Structures, Algorithms, ML)" className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Availability — just before Experience */}
+      <section className="rounded-lg border border-sky-200 bg-white p-4 shadow-sm">
+        <h3 className="text-sm font-semibold text-sky-800 mb-3">Availability</h3>
+        <input
+          type="date"
+          {...register("personal.availability")}
+          className="w-full rounded border border-sky-200 bg-white px-3 py-2 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+        />
       </section>
 
       {/* Experience */}
@@ -190,11 +216,27 @@ export const ResumeForm = forwardRef<ResumeFormHandle, { data: FormData; onChang
                   {values.experience[i].visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                 </button>
                 <input type="hidden" {...register(`experience.${i}.role`)} />
-                <RichTextInput value={values.experience?.[i]?.role ?? ""} onChange={(v) => setValue(`experience.${i}.role` as any, v)} onFocus={onFocusField(`experience.${i}.role`)} placeholder="Role" className="flex-1 rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+                <RichTextInput value={values.experience?.[i]?.role ?? ""} onChange={(v) => setValue(`experience.${i}.role` as any, v)} onFocus={onFocusField(`experience.${i}.role`)} placeholder="Role" className="flex-1 min-w-[140px] rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
                 <button type="button" onClick={() => { experience.remove(i); syncNow(); }} className="text-sky-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
               </div>
-              <input type="hidden" {...register(`experience.${i}.dateRange`)} />
-              <RichTextInput value={values.experience?.[i]?.dateRange ?? ""} onChange={(v) => setValue(`experience.${i}.dateRange` as any, v)} onFocus={onFocusField(`experience.${i}.dateRange`)} placeholder="Date range" className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+              <div className="flex gap-2">
+                <div className="flex-1 min-w-0">
+                  <label className="text-[10px] text-slate-500 block mb-0.5">From</label>
+                  <input
+                    type="date"
+                    {...register(`experience.${i}.dateRangeStart`)}
+                    className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <label className="text-[10px] text-slate-500 block mb-0.5">To</label>
+                  <input
+                    type="date"
+                    {...register(`experience.${i}.dateRangeEnd`)}
+                    className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+              </div>
               <input type="hidden" {...register(`experience.${i}.company`)} />
               <RichTextInput value={values.experience?.[i]?.company ?? ""} onChange={(v) => setValue(`experience.${i}.company` as any, v)} onFocus={onFocusField(`experience.${i}.company`)} placeholder="Company" className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
               <input type="hidden" {...register(`experience.${i}.location`)} />
@@ -241,13 +283,29 @@ export const ResumeForm = forwardRef<ResumeFormHandle, { data: FormData; onChang
                   {values.projects[i].visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                 </button>
                 <input type="hidden" {...register(`projects.${i}.name`)} />
-                <RichTextInput value={values.projects?.[i]?.name ?? ""} onChange={(v) => setValue(`projects.${i}.name` as any, v)} onFocus={onFocusField(`projects.${i}.name`)} placeholder="Project name" className="flex-1 rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+                <RichTextInput value={values.projects?.[i]?.name ?? ""} onChange={(v) => setValue(`projects.${i}.name` as any, v)} onFocus={onFocusField(`projects.${i}.name`)} placeholder="Project name" className="flex-1 min-w-[140px] rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
                 <button type="button" onClick={() => { projects.remove(i); syncNow(); }} className="text-sky-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
               </div>
               <input type="hidden" {...register(`projects.${i}.techStack`)} />
               <RichTextInput value={values.projects?.[i]?.techStack ?? ""} onChange={(v) => setValue(`projects.${i}.techStack` as any, v)} onFocus={onFocusField(`projects.${i}.techStack`)} placeholder="Tech stack" className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
-              <input type="hidden" {...register(`projects.${i}.dateRange`)} />
-              <RichTextInput value={values.projects?.[i]?.dateRange ?? ""} onChange={(v) => setValue(`projects.${i}.dateRange` as any, v)} onFocus={onFocusField(`projects.${i}.dateRange`)} placeholder="Date range" className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+              <div className="flex gap-2">
+                <div className="flex-1 min-w-0">
+                  <label className="text-[10px] text-slate-500 block mb-0.5">From</label>
+                  <input
+                    type="date"
+                    {...register(`projects.${i}.dateRangeStart`)}
+                    className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <label className="text-[10px] text-slate-500 block mb-0.5">To</label>
+                  <input
+                    type="date"
+                    {...register(`projects.${i}.dateRangeEnd`)}
+                    className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+              </div>
               <BulletList
                 bullets={values.projects[i].bullets}
                 bulletsPath={`projects.${i}.bullets`}
@@ -286,7 +344,7 @@ export const ResumeForm = forwardRef<ResumeFormHandle, { data: FormData; onChang
           {skills.fields.map((field, i) => (
             <div key={field.id} className="flex gap-2">
               <input type="hidden" {...register(`skills.${i}.category`)} />
-              <RichTextInput value={values.skills?.[i]?.category ?? ""} onChange={(v) => setValue(`skills.${i}.category` as any, v)} onFocus={onFocusField(`skills.${i}.category`)} placeholder="Category" className="w-32 rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+              <RichTextInput value={values.skills?.[i]?.category ?? ""} onChange={(v) => setValue(`skills.${i}.category` as any, v)} onFocus={onFocusField(`skills.${i}.category`)} placeholder="Category" className="w-32 min-w-[100px] rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
               <input type="hidden" {...register(`skills.${i}.items`)} />
               <RichTextInput value={values.skills?.[i]?.items ?? ""} onChange={(v) => setValue(`skills.${i}.items` as any, v)} onFocus={onFocusField(`skills.${i}.items`)} placeholder="Item1, Item2" className="flex-1 rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
               <button type="button" onClick={() => { skills.remove(i); syncNow(); }} className="text-sky-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>

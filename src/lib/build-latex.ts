@@ -1,5 +1,6 @@
 import type { ResumeData } from "@/types/resume";
 import { escapeLatex, escapeLatexPreserveCommands } from "./latex-escape";
+import { formatDate, formatDateRange } from "./date-utils";
 
 function href(url: string, display: string): string {
   const u = url.startsWith("http") ? url : "https://" + url;
@@ -110,10 +111,11 @@ export function buildLatex(data: ResumeData): string {
       "\\section{Education}\n" +
       "  \\resumeSubHeadingListStart\n";
     for (const e of educationEntries) {
+      const dateStr = formatDateRange(e.dateRangeStart, e.dateRangeEnd, e.dateRange);
       educationBody +=
         "    \\resumeSubheading\n" +
         "      {" + escapeLatexPreserveCommands(e.school) + "}{" + escapeLatexPreserveCommands(e.location) + "}\n" +
-        "      {" + escapeLatexPreserveCommands(e.degree) + "}{" + escapeLatexPreserveCommands(e.dateRange) + "}\n";
+        "      {" + escapeLatexPreserveCommands(e.degree) + "}{" + escapeLatexPreserveCommands(dateStr) + "}\n";
       const courses = e.relevantCourses?.trim();
       if (courses) {
         educationBody +=
@@ -133,9 +135,10 @@ export function buildLatex(data: ResumeData): string {
       "\\section{Experience}\n" +
       "  \\resumeSubHeadingListStart\n\n";
     for (const e of experienceEntries) {
+      const dateStr = formatDateRange(e.dateRangeStart, e.dateRangeEnd, e.dateRange);
       experienceBody +=
         "    \\resumeSubheading\n" +
-        "      {" + escapeLatexPreserveCommands(e.role) + "}{" + escapeLatexPreserveCommands(e.dateRange) + "}\n" +
+        "      {" + escapeLatexPreserveCommands(e.role) + "}{" + escapeLatexPreserveCommands(dateStr) + "}\n" +
         "      {" + escapeLatexPreserveCommands(e.company) + "}{" + escapeLatexPreserveCommands(e.location) + "}\n";
       const bullets = e.bullets.filter((b) => b.trim());
       if (bullets.length > 0) {
@@ -159,11 +162,12 @@ export function buildLatex(data: ResumeData): string {
       "\\section{Projects}\n" +
       "    \\resumeSubHeadingListStart\n";
     for (const p of projectEntries) {
+      const dateStr = formatDateRange(p.dateRangeStart, p.dateRangeEnd, p.dateRange);
       const title =
         "\\textbf{" + escapeLatexPreserveCommands(p.name) + "} $|$ \\emph{" + escapeLatexPreserveCommands(p.techStack) + "}";
       projectsBody +=
         "      \\resumeProjectHeading\n" +
-        "          {" + title + "}{" + escapeLatexPreserveCommands(p.dateRange) + "}\n";
+        "          {" + title + "}{" + escapeLatexPreserveCommands(dateStr) + "}\n";
       const bullets = p.bullets.filter((b) => b.trim());
       if (bullets.length > 0) {
         projectsBody += "          \\resumeItemListStart\n";
@@ -195,8 +199,18 @@ export function buildLatex(data: ResumeData): string {
       " \\end{itemize}\n\n";
   }
 
+  // ---------- AVAILABILITY ----------
+  const availabilityDate = data.personal.availability;
+  const availabilityBody =
+    availabilityDate
+      ? "%-----------AVAILABILITY-----------\n" +
+        "\\section{Availability}\n" +
+        "  \\small " + escapeLatexPreserveCommands(formatDate(availabilityDate)) + "\n\n"
+      : "";
+
   // Assemble body in user's section order (heading first, then sections)
   const sectionMap: Record<string, string> = {
+    availability: availabilityBody,
     education: educationBody,
     experience: experienceBody,
     projects: projectsBody,
