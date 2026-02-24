@@ -239,20 +239,6 @@ export const ResumeForm = forwardRef<ResumeFormHandle, { data: FormData; onChang
                 onFocusBullet={onFocusBullet}
                 onChange={(bullets) => { setValue(`experience.${i}.bullets` as any, bullets); syncNow(); }}
                 placeholder="Achievement"
-                onRefine={async (j) => {
-                  const bullet = values.experience[i].bullets[j];
-                  if (!bullet.trim()) return;
-                  try {
-                    const res = await fetch("/api/refine-bullet", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ bullet }) });
-                    const data = await res.json();
-                    if (data.refined) {
-                      const next = [...values.experience[i].bullets];
-                      next[j] = data.refined;
-                      setValue(`experience.${i}.bullets`, next);
-                      syncNow();
-                    }
-                  } catch (_) {}
-                }}
               />
             </div>
           ))}
@@ -309,20 +295,6 @@ export const ResumeForm = forwardRef<ResumeFormHandle, { data: FormData; onChang
                 onFocusBullet={onFocusBullet}
                 onChange={(bullets) => { setValue(`projects.${i}.bullets` as any, bullets); syncNow(); }}
                 placeholder="Detail"
-                onRefine={async (j) => {
-                  const bullet = values.projects[i].bullets[j];
-                  if (!bullet.trim()) return;
-                  try {
-                    const res = await fetch("/api/refine-bullet", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ bullet }) });
-                    const data = await res.json();
-                    if (data.refined) {
-                      const next = [...values.projects[i].bullets];
-                      next[j] = data.refined;
-                      setValue(`projects.${i}.bullets`, next);
-                      syncNow();
-                    }
-                  } catch (_) {}
-                }}
               />
             </div>
           ))}
@@ -380,20 +352,6 @@ export const ResumeForm = forwardRef<ResumeFormHandle, { data: FormData; onChang
                 onFocusBullet={onFocusBullet}
                 onChange={(bullets) => { setValue(`leadership.${i}.bullets` as any, bullets); syncNow(); }}
                 placeholder="Detail"
-                onRefine={async (j) => {
-                  const bullet = values.leadership[i].bullets[j];
-                  if (!bullet.trim()) return;
-                  try {
-                    const res = await fetch("/api/refine-bullet", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ bullet }) });
-                    const data = await res.json();
-                    if (data.refined) {
-                      const next = [...values.leadership[i].bullets];
-                      next[j] = data.refined;
-                      setValue(`leadership.${i}.bullets`, next);
-                      syncNow();
-                    }
-                  } catch (_) {}
-                }}
               />
             </div>
           ))}
@@ -430,14 +388,12 @@ function BulletList({
   onFocusBullet,
   onChange,
   placeholder,
-  onRefine,
 }: {
   bullets: string[];
   bulletsPath?: string;
   onFocusBullet?: (path: string, index: number) => (e: React.FocusEvent<HTMLDivElement>) => void;
   onChange: (b: string[]) => void;
   placeholder: string;
-  onRefine?: (index: number) => void;
 }) {
   return (
     <div className="space-y-2">
@@ -455,16 +411,6 @@ function BulletList({
             placeholder={placeholder}
             className="flex-1 rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
           />
-          {onRefine && b.trim() && (
-            <button
-              type="button"
-              onClick={() => onRefine(j)}
-              className="shrink-0 rounded px-2 py-1 text-xs font-medium text-white bg-teal-600 hover:bg-teal-500"
-              title="Refine with AI"
-            >
-              Refine
-            </button>
-          )}
           <button type="button" onClick={() => onChange(bullets.filter((_, k) => k !== j))} className="text-sky-500 hover:text-red-600 shrink-0">
             <Trash2 className="w-4 h-4" />
           </button>

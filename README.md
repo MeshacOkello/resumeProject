@@ -1,6 +1,6 @@
 # Resume Generator — LaTeX PDF
 
-Web-based resume generator with **Jake's LaTeX template**. Split-screen: structured form on the left, **live-rendered PDF** on the right. Export `.pdf` and `.tex`, save/load data, ATS keyword scanner, theme toggles, drag-and-drop section order, and optional AI bullet refinement.
+Web-based resume generator with **Jake's LaTeX template**. Split-screen: structured form on the left, **live-rendered PDF** on the right. Export `.pdf` and `.tex`, save/load data, ATS keyword scanner, theme toggles, and drag-and-drop section order.
 
 ## Features
 
@@ -15,7 +15,6 @@ Web-based resume generator with **Jake's LaTeX template**. Split-screen: structu
 - **Theme**: Font (default, Roboto, Source Sans Pro), top margin, compact line spacing.
 - **ATS scanner**: Paste a job description; see matched vs. missing keywords.
 - **Overflow warning**: Alert when content may spill to page 2.
-- **AI bullet optimizer**: “Refine” on any bullet calls an optional API (OpenAI) to rewrite for impact. Set `OPENAI_API_KEY` in `.env.local` to enable.
 
 ## Requirements
 
@@ -31,7 +30,6 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-Optional: create `.env.local` with `OPENAI_API_KEY=sk-...` to enable the “Refine” button on bullets.
 
 ## Tech stack
 
