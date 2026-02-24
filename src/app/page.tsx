@@ -11,17 +11,9 @@ import { HtmlPreview } from "@/components/HtmlPreview";
 
 const STORAGE_KEY = "resume-generator-data";
 
-/** Use our API proxy to avoid CORS when deployed; or custom URLs if set */
-const USE_PROXY = !process.env.NEXT_PUBLIC_TRACK_DOWNLOAD_URL && !process.env.NEXT_PUBLIC_GET_DOWNLOAD_COUNT_URL;
-
-const TRACK_DOWNLOAD_URL = USE_PROXY
-  ? "/api/download-count"
-  : (process.env.NEXT_PUBLIC_TRACK_DOWNLOAD_URL ?? "https://api.countapi.xyz/hit/resume-project/downloads");
-
-const GET_COUNT_URL = USE_PROXY
-  ? "/api/download-count"
-  : (process.env.NEXT_PUBLIC_GET_DOWNLOAD_COUNT_URL ??
-    (process.env.NEXT_PUBLIC_TRACK_DOWNLOAD_URL ?? "https://api.countapi.xyz/hit/resume-project/downloads").replace("/hit/", "/get/"));
+/** Use our API for persistent download count */
+const TRACK_DOWNLOAD_URL = "/api/download-count";
+const GET_COUNT_URL = "/api/download-count";
 
 const POLL_INTERVAL_MS = 60_000;
 
@@ -32,12 +24,18 @@ function load(): ResumeData | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     const data = { ...defaultResume, ...parsed } as ResumeData;
-    if (data.sectionOrder && !data.sectionOrder.includes("availability")) {
-      const expIdx = data.sectionOrder.indexOf("experience");
-      const before = expIdx >= 0 ? data.sectionOrder.slice(0, expIdx) : data.sectionOrder;
-      const after = expIdx >= 0 ? data.sectionOrder.slice(expIdx) : [];
-      data.sectionOrder = [...before, "availability", ...after] as typeof data.sectionOrder;
+    // Migrate section order: remove availability (legacy), ensure leadership exists
+    if (data.sectionOrder) {
+      const order = data.sectionOrder as string[];
+      const filtered = order.filter((k) => k !== "availability") as SectionOrder;
+      if (!filtered.includes("leadership")) {
+        const projIdx = filtered.indexOf("projects");
+        const insertAt = projIdx >= 0 ? projIdx + 1 : filtered.length;
+        filtered.splice(insertAt, 0, "leadership");
+      }
+      data.sectionOrder = filtered;
     }
+    if (!data.leadership) data.leadership = [];
     return data;
   } catch {
     return null;
@@ -105,9 +103,16 @@ export default function Home() {
     setData((d) => ({ ...d, theme }));
   }, []);
 
-  const handleDownloadPdf = useCallback(() => {
-    fetch(TRACK_DOWNLOAD_URL, { method: USE_PROXY ? "POST" : "GET" }).catch(() => {});
-    setDownloadCount((c) => c + 1);
+  const handleDownloadPdf = useCallback(async () => {
+    try {
+      const res = await fetch(TRACK_DOWNLOAD_URL, { method: "POST" });
+      if (res.ok) {
+        const json = await res.json();
+        if (typeof json?.value === "number") setDownloadCount(json.value);
+      }
+    } catch {
+      setDownloadCount((c) => c + 1);
+    }
     window.print();
   }, []);
 

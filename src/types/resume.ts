@@ -7,7 +7,6 @@ export const personalSchema = z.object({
   email: z.string(),
   linkedin: z.string(),
   github: z.string(),
-  availability: z.string().default(""),
 });
 
 export const educationEntrySchema = z.object({
@@ -46,13 +45,25 @@ export const projectEntrySchema = z.object({
   visible: z.boolean().default(true),
 });
 
+export const leadershipEntrySchema = z.object({
+  id: z.string(),
+  role: z.string(),
+  organization: z.string(),
+  location: z.string().default(""),
+  dateRange: z.string(),
+  dateRangeStart: z.string().default(""),
+  dateRangeEnd: z.string().default(""),
+  bullets: z.array(z.string()),
+  visible: z.boolean().default(true),
+});
+
 export const skillCategorySchema = z.object({
   id: z.string(),
   category: z.string(),
   items: z.string(),
 });
 
-export const sectionOrderSchema = z.array(z.enum(["availability", "education", "experience", "projects", "skills"]));
+export const sectionOrderSchema = z.array(z.enum(["education", "experience", "projects", "leadership", "skills"]));
 
 export const themeSchema = z.object({
   font: z.enum(["default", "roboto", "sourcesanspro"]).default("default"),
@@ -65,6 +76,7 @@ export const resumeSchema = z.object({
   education: z.array(educationEntrySchema),
   experience: z.array(experienceEntrySchema),
   projects: z.array(projectEntrySchema),
+  leadership: z.array(leadershipEntrySchema),
   skills: z.array(skillCategorySchema),
   sectionOrder: sectionOrderSchema,
   theme: themeSchema,
@@ -74,6 +86,7 @@ export type Personal = z.infer<typeof personalSchema>;
 export type EducationEntry = z.infer<typeof educationEntrySchema>;
 export type ExperienceEntry = z.infer<typeof experienceEntrySchema>;
 export type ProjectEntry = z.infer<typeof projectEntrySchema>;
+export type LeadershipEntry = z.infer<typeof leadershipEntrySchema>;
 export type SkillCategory = z.infer<typeof skillCategorySchema>;
 export type SectionOrder = z.infer<typeof sectionOrderSchema>;
 export type Theme = z.infer<typeof themeSchema>;
@@ -87,7 +100,6 @@ export const defaultPersonal: Personal = {
   email: "",
   linkedin: "",
   github: "",
-  availability: "",
 };
 
 export const defaultEducationEntry = (): EducationEntry => ({
@@ -126,19 +138,32 @@ export const defaultProjectEntry = (): ProjectEntry => ({
   visible: true,
 });
 
+export const defaultLeadershipEntry = (): LeadershipEntry => ({
+  id: id(),
+  role: "",
+  organization: "",
+  location: "",
+  dateRange: "",
+  dateRangeStart: "",
+  dateRangeEnd: "",
+  bullets: [""],
+  visible: true,
+});
+
 export const defaultSkillCategory = (): SkillCategory => ({
   id: id(),
   category: "",
   items: "",
 });
 
-export const defaultSectionOrder: SectionOrder = ["availability", "education", "experience", "projects", "skills"];
+export const defaultSectionOrder: SectionOrder = ["education", "experience", "projects", "leadership", "skills"];
 
 export const defaultResume: ResumeData = {
   personal: { ...defaultPersonal },
   education: [defaultEducationEntry()],
   experience: [defaultExperienceEntry()],
   projects: [defaultProjectEntry()],
+  leadership: [],
   skills: [
     { ...defaultSkillCategory(), category: "Languages", items: "" },
     { ...defaultSkillCategory(), category: "Frameworks", items: "" },

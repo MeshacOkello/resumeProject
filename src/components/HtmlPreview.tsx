@@ -16,7 +16,7 @@ function renderInline(text: string, keyPrefix = ""): React.ReactNode {
 
 /** High-fidelity HTML preview mirroring Jake's template when PDF is unavailable. */
 export function HtmlPreview({ data }: { data: ResumeData }) {
-  const { personal, education, experience, projects, skills, sectionOrder } = data;
+  const { personal, education, experience, projects, leadership = [], skills, sectionOrder } = data;
   const contactParts: string[] = [];
   if (personal.phone) contactParts.push(personal.phone);
   if (personal.email) contactParts.push(personal.email);
@@ -25,18 +25,6 @@ export function HtmlPreview({ data }: { data: ResumeData }) {
   const contactLine = contactParts.join(" | ");
 
   function renderSection(key: (typeof sectionOrder)[number]) {
-    if (key === "availability") {
-      const avail = personal.availability;
-      if (!avail) return null;
-      return (
-        <section key="availability" className="mb-3">
-          <h3 className={sectionHeading}>Availability</h3>
-          <p className="text-sm text-slate-700">
-            {formatDate(avail)}
-          </p>
-        </section>
-      );
-    }
     if (key === "education") {
       return (
         <section key="education" className="mb-3">
@@ -111,6 +99,40 @@ export function HtmlPreview({ data }: { data: ResumeData }) {
         </section>
       );
     }
+    if (key === "leadership") {
+      return (
+        <section key="leadership" className="mb-3">
+          <h3 className={sectionHeading}>Leadership &amp; Activities</h3>
+          <div className="space-y-3">
+            {leadership
+              .filter((e) => e.visible && (e.role || e.organization))
+              .map((e) => (
+                <div key={e.id}>
+                  <div className="flex justify-between gap-2 text-sm">
+                    <span className="font-semibold">
+                      {renderInline(e.role || "—", `lead-${e.id}-role`)}
+                    </span>
+                    <span className="text-slate-600 shrink-0">
+                      {formatDateRange(e.dateRangeStart, e.dateRangeEnd, e.dateRange || "")}
+                    </span>
+                  </div>
+                  <div className="text-sm text-slate-600 italic mb-1">
+                    {renderInline(e.organization || "", `lead-${e.id}-org`)}
+                    {e.location && <> — {renderInline(e.location, `lead-${e.id}-loc`)}</>}
+                  </div>
+                  <ul className="list-disc list-inside text-sm space-y-0.5 ml-1">
+                    {e.bullets
+                      .filter((b) => b.trim())
+                      .map((b, i) => (
+                        <li key={i}>{renderInline(b, `lead-${e.id}-b${i}`)}</li>
+                      ))}
+                  </ul>
+                </div>
+              ))}
+          </div>
+        </section>
+      );
+    }
     if (key === "projects") {
       return (
         <section key="projects" className="mb-3">
@@ -162,14 +184,13 @@ export function HtmlPreview({ data }: { data: ResumeData }) {
       return (
         <section key="skills" className="mb-3">
           <h3 className={sectionHeading}>Technical Skills</h3>
-          <div className="text-sm">
+          <div className="text-sm flex flex-wrap gap-x-2 gap-y-0.5">
             {skills
               .filter((c) => c.category.trim() || c.items.trim())
               .map((c) => (
-                <span key={c.id} className="inline">
+                <span key={c.id} className="inline-block break-words max-w-full">
                   <strong>{renderInline(c.category || "—", `skill-${c.id}-cat`)}</strong>
                   {c.items ? <>: {renderInline(c.items, `skill-${c.id}-items`)}</> : null}
-                  {"  "}
                 </span>
               ))}
           </div>
@@ -181,10 +202,17 @@ export function HtmlPreview({ data }: { data: ResumeData }) {
 
   return (
     <div
-      className="bg-white text-slate-800 rounded-lg shadow-xl p-6 mx-auto w-full max-w-[210mm] box-border"
-      style={{ minHeight: 500, fontFamily: "Georgia, 'Times New Roman', serif" }}
+      className="bg-white text-slate-800 rounded-lg shadow-xl p-6 mx-auto box-border overflow-hidden"
+      style={{
+        width: "210mm",
+        minHeight: "297mm",
+        maxWidth: "210mm",
+        fontFamily: "Georgia, 'Times New Roman', serif",
+        wordBreak: "break-word",
+        overflowWrap: "break-word",
+      }}
     >
-      <header className="text-center border-b border-slate-300 pb-2 mb-3">
+      <header className="text-center border-b border-slate-300 pb-2 mb-3 break-words">
         <h1 className="text-xl font-bold text-slate-900">
           {renderInline(personal.fullName || "Your Name", "name")}
         </h1>
@@ -194,7 +222,7 @@ export function HtmlPreview({ data }: { data: ResumeData }) {
           </p>
         )}
       </header>
-      <div className="text-sm">
+      <div className="text-sm break-words overflow-hidden">
         {sectionOrder.map((k) => renderSection(k))}
       </div>
     </div>

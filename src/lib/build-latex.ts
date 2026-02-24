@@ -1,6 +1,6 @@
 import type { ResumeData } from "@/types/resume";
 import { escapeLatex, escapeLatexPreserveCommands } from "./latex-escape";
-import { formatDate, formatDateRange } from "./date-utils";
+import { formatDateRange } from "./date-utils";
 
 function href(url: string, display: string): string {
   const u = url.startsWith("http") ? url : "https://" + url;
@@ -207,21 +207,39 @@ export function buildLatex(data: ResumeData): string {
       " \\end{itemize}\n\n";
   }
 
-  // ---------- AVAILABILITY ----------
-  const availabilityDate = data.personal.availability;
-  const availabilityBody =
-    availabilityDate
-      ? "%-----------AVAILABILITY-----------\n" +
-        "\\section{Availability}\n" +
-        "  \\small " + escapeLatexPreserveCommands(formatDate(availabilityDate)) + "\n\n"
-      : "";
+  // ---------- LEADERSHIP & ACTIVITIES ----------
+  const leadershipEntries = data.leadership?.filter((e) => e.visible && (e.role || e.organization)) ?? [];
+  let leadershipBody = "";
+  if (leadershipEntries.length > 0) {
+    leadershipBody =
+      "%-----------LEADERSHIP & ACTIVITIES-----------\n" +
+      "\\section{Leadership \\& Activities}\n" +
+      "  \\resumeSubHeadingListStart\n\n";
+    for (const e of leadershipEntries) {
+      const dateStr = formatDateRange(e.dateRangeStart, e.dateRangeEnd, e.dateRange);
+      leadershipBody +=
+        "    \\resumeSubheading\n" +
+        "      {" + escapeLatexPreserveCommands(e.role) + "}{" + escapeLatexPreserveCommands(dateStr) + "}\n" +
+        "      {" + escapeLatexPreserveCommands(e.organization) + "}{" + escapeLatexPreserveCommands(e.location || "") + "}\n";
+      const bullets = e.bullets.filter((b) => b.trim());
+      if (bullets.length > 0) {
+        leadershipBody += "      \\resumeItemListStart\n";
+        for (const b of bullets) {
+          leadershipBody += "        \\resumeItem{" + escapeLatexPreserveCommands(b) + "}\n";
+        }
+        leadershipBody += "      \\resumeItemListEnd\n";
+      }
+      leadershipBody += "\n";
+    }
+    leadershipBody += "  \\resumeSubHeadingListEnd\n\n";
+  }
 
   // Assemble body in user's section order (heading first, then sections)
   const sectionMap: Record<string, string> = {
-    availability: availabilityBody,
     education: educationBody,
     experience: experienceBody,
     projects: projectsBody,
+    leadership: leadershipBody,
     skills: skillsBody,
   };
   const orderedSections = data.sectionOrder.map((key) => sectionMap[key]).filter(Boolean);

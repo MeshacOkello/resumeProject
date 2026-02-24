@@ -15,6 +15,10 @@ input, textarea, select {
 
 /* When printing (Download PDF → Save as PDF), show only the resume */
 @media print {
+  @page {
+    size: A4;
+    margin: 0.5in;
+  }
   body {
     background: white;
   }

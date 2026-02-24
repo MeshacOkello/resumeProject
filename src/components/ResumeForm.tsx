@@ -7,6 +7,7 @@ import {
   defaultEducationEntry,
   defaultExperienceEntry,
   defaultProjectEntry,
+  defaultLeadershipEntry,
   defaultSkillCategory,
 } from "@/types/resume";
 import { Plus, Trash2, GripVertical, Eye, EyeOff } from "lucide-react";
@@ -37,6 +38,7 @@ export const ResumeForm = forwardRef<ResumeFormHandle, { data: FormData; onChang
   const education = useFieldArray({ control, name: "education" });
   const experience = useFieldArray({ control, name: "experience" });
   const projects = useFieldArray({ control, name: "projects" });
+  const leadership = useFieldArray({ control, name: "leadership" });
   const skills = useFieldArray({ control, name: "skills" });
 
   const values = watch();
@@ -186,16 +188,6 @@ export const ResumeForm = forwardRef<ResumeFormHandle, { data: FormData; onChang
         </div>
       </section>
 
-      {/* Availability — just before Experience */}
-      <section className="rounded-lg border border-sky-200 bg-white p-4 shadow-sm">
-        <h3 className="text-sm font-semibold text-sky-800 mb-3">Availability</h3>
-        <input
-          type="date"
-          {...register("personal.availability")}
-          className="w-full rounded border border-sky-200 bg-white px-3 py-2 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
-        />
-      </section>
-
       {/* Experience */}
       <section className="rounded-lg border border-sky-200 bg-white p-4 shadow-sm">
         <div className="flex items-center justify-between mb-3">
@@ -327,6 +319,77 @@ export const ResumeForm = forwardRef<ResumeFormHandle, { data: FormData; onChang
                       const next = [...values.projects[i].bullets];
                       next[j] = data.refined;
                       setValue(`projects.${i}.bullets`, next);
+                      syncNow();
+                    }
+                  } catch (_) {}
+                }}
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Leadership & Activities */}
+      <section className="rounded-lg border border-sky-200 bg-white p-4 shadow-sm">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-semibold text-sky-800">Leadership & Activities</h3>
+          <button
+            type="button"
+            onClick={() => { leadership.append(defaultLeadershipEntry()); syncNow(); }}
+            className="text-xs font-medium text-sky-800 hover:text-sky-600 flex items-center gap-1"
+          >
+            <Plus className="w-3.5 h-3.5" /> Add
+          </button>
+        </div>
+        <div className="space-y-3">
+          {leadership.fields.map((field, i) => (
+            <div key={field.id} className="rounded border border-slate-200 bg-sky-50/50 p-3 space-y-2">
+              <div className="flex items-center gap-2">
+                <button type="button" onClick={() => { setValue(`leadership.${i}.visible`, !values.leadership[i].visible); syncNow(); }} className="text-sky-600 hover:text-sky-800">
+                  {values.leadership[i].visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                </button>
+                <input type="hidden" {...register(`leadership.${i}.role`)} />
+                <RichTextInput value={values.leadership?.[i]?.role ?? ""} onChange={(v) => setValue(`leadership.${i}.role` as any, v)} onFocus={onFocusField(`leadership.${i}.role`)} placeholder="Role" className="flex-1 min-w-[140px] rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+                <button type="button" onClick={() => { leadership.remove(i); syncNow(); }} className="text-sky-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+              </div>
+              <div className="flex gap-2">
+                <div className="flex-1 min-w-0">
+                  <label className="text-[10px] text-slate-500 block mb-0.5">From</label>
+                  <input
+                    type="date"
+                    {...register(`leadership.${i}.dateRangeStart`)}
+                    className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <label className="text-[10px] text-slate-500 block mb-0.5">To</label>
+                  <input
+                    type="date"
+                    {...register(`leadership.${i}.dateRangeEnd`)}
+                    className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+              </div>
+              <input type="hidden" {...register(`leadership.${i}.organization`)} />
+              <RichTextInput value={values.leadership?.[i]?.organization ?? ""} onChange={(v) => setValue(`leadership.${i}.organization` as any, v)} onFocus={onFocusField(`leadership.${i}.organization`)} placeholder="Organization" className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+              <input type="hidden" {...register(`leadership.${i}.location`)} />
+              <RichTextInput value={values.leadership?.[i]?.location ?? ""} onChange={(v) => setValue(`leadership.${i}.location` as any, v)} onFocus={onFocusField(`leadership.${i}.location`)} placeholder="Location (optional)" className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
+              <BulletList
+                bullets={values.leadership[i].bullets}
+                bulletsPath={`leadership.${i}.bullets`}
+                onFocusBullet={onFocusBullet}
+                onChange={(bullets) => { setValue(`leadership.${i}.bullets` as any, bullets); syncNow(); }}
+                placeholder="Detail"
+                onRefine={async (j) => {
+                  const bullet = values.leadership[i].bullets[j];
+                  if (!bullet.trim()) return;
+                  try {
+                    const res = await fetch("/api/refine-bullet", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ bullet }) });
+                    const data = await res.json();
+                    if (data.refined) {
+                      const next = [...values.leadership[i].bullets];
+                      next[j] = data.refined;
+                      setValue(`leadership.${i}.bullets`, next);
                       syncNow();
                     }
                   } catch (_) {}

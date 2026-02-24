@@ -7,15 +7,24 @@ import { CSS } from "@dnd-kit/utilities";
 import type { SectionOrder } from "@/types/resume";
 import { GripVertical } from "lucide-react";
 
+const SECTION_LABELS: Record<string, string> = {
+  education: "Education",
+  experience: "Experience",
+  projects: "Projects",
+  leadership: "Leadership & Activities",
+  skills: "Technical Skills",
+};
+
 function SortableItem({ id, children }: { id: string; children: React.ReactNode }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
   const style = { transform: CSS.Transform.toString(transform), transition };
+  const label = SECTION_LABELS[id] ?? id;
   return (
     <div ref={setNodeRef} style={style} className="flex items-center gap-2 rounded border border-sky-200 bg-white px-2 py-1.5">
       <button type="button" className="touch-none cursor-grab active:cursor-grabbing text-sky-400" {...attributes} {...listeners}>
         <GripVertical className="w-4 h-4" />
       </button>
-      <span className="text-sm capitalize text-sky-700">{id}</span>
+      <span className="text-sm text-sky-700">{label}</span>
     </div>
   );
 }
