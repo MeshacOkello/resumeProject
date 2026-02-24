@@ -29,6 +29,18 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Deploy to Amplify (or Vercel)
+
+The download counter requires a persistent store. On serverless (Amplify, Vercel), the filesystem does not persist. Use **Upstash Redis** (free tier):
+
+1. Create a free database at [console.upstash.com](https://console.upstash.com)
+2. Copy the REST URL and token from the database details
+3. In Amplify: **App settings → Environment variables** → Add:
+   - `UPSTASH_REDIS_REST_URL` = your REST URL
+   - `UPSTASH_REDIS_REST_TOKEN` = your token
+4. Redeploy the app
+
+Without these env vars, the download count will stay at 0 on Amplify.
 
 ## Tech stack
 
