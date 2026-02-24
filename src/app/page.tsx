@@ -11,14 +11,17 @@ import { HtmlPreview } from "@/components/HtmlPreview";
 
 const STORAGE_KEY = "resume-generator-data";
 
-/** Optional: set NEXT_PUBLIC_TRACK_DOWNLOAD_URL to your own endpoint; otherwise uses CountAPI */
-const TRACK_DOWNLOAD_URL =
-  process.env.NEXT_PUBLIC_TRACK_DOWNLOAD_URL ?? "https://api.countapi.xyz/hit/resume-project/downloads";
+/** Use our API proxy to avoid CORS when deployed; or custom URLs if set */
+const USE_PROXY = !process.env.NEXT_PUBLIC_TRACK_DOWNLOAD_URL && !process.env.NEXT_PUBLIC_GET_DOWNLOAD_COUNT_URL;
 
-/** GET URL for fetching count; set NEXT_PUBLIC_GET_DOWNLOAD_COUNT_URL for custom backends */
-const GET_COUNT_URL =
-  process.env.NEXT_PUBLIC_GET_DOWNLOAD_COUNT_URL ??
-  TRACK_DOWNLOAD_URL.replace("/hit/", "/get/");
+const TRACK_DOWNLOAD_URL = USE_PROXY
+  ? "/api/download-count"
+  : (process.env.NEXT_PUBLIC_TRACK_DOWNLOAD_URL ?? "https://api.countapi.xyz/hit/resume-project/downloads");
+
+const GET_COUNT_URL = USE_PROXY
+  ? "/api/download-count"
+  : (process.env.NEXT_PUBLIC_GET_DOWNLOAD_COUNT_URL ??
+    (process.env.NEXT_PUBLIC_TRACK_DOWNLOAD_URL ?? "https://api.countapi.xyz/hit/resume-project/downloads").replace("/hit/", "/get/"));
 
 const POLL_INTERVAL_MS = 60_000;
 
@@ -57,7 +60,7 @@ function saveBlob(blob: Blob, filename: string) {
 
 async function fetchDownloadCount(): Promise<number> {
   try {
-    const res = await fetch(GET_COUNT_URL);
+    const res = await fetch(GET_COUNT_URL, { cache: "no-store" });
     if (!res.ok) return 0;
     const json = await res.json();
     return typeof json?.value === "number" ? json.value : 0;
@@ -103,7 +106,7 @@ export default function Home() {
   }, []);
 
   const handleDownloadPdf = useCallback(() => {
-    fetch(TRACK_DOWNLOAD_URL).catch(() => {});
+    fetch(TRACK_DOWNLOAD_URL, { method: USE_PROXY ? "POST" : "GET" }).catch(() => {});
     setDownloadCount((c) => c + 1);
     window.print();
   }, []);
