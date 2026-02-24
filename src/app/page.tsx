@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useEffect, useRef } from "react";
+import { FileEdit, Eye } from "lucide-react";
 import { defaultResume, type ResumeData, type SectionOrder } from "@/types/resume";
 import { buildLatex } from "@/lib/build-latex";
 import { ResumeForm } from "@/components/ResumeForm";
@@ -67,10 +68,13 @@ async function fetchDownloadCount(): Promise<number> {
   }
 }
 
+type MobileTab = "form" | "preview";
+
 export default function Home() {
   const [data, setData] = useState<ResumeData>(defaultResume);
   const [formKey, setFormKey] = useState(0);
   const [downloadCount, setDownloadCount] = useState(0);
+  const [mobileTab, setMobileTab] = useState<MobileTab>("form");
   const formRef = useRef<{ applyFormat: (type: "bold" | "italic" | "underline") => void } | null>(null);
 
   useEffect(() => {
@@ -167,11 +171,33 @@ export default function Home() {
       />
       </div>
 
-      {/* Main: left form (~38%) | right preview (~62%) */}
+      {/* Mobile: tab switcher */}
+      <div className="md:hidden flex border-b border-sky-200/80 bg-white print:hidden">
+        <button
+          type="button"
+          onClick={() => setMobileTab("form")}
+          className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors ${
+            mobileTab === "form" ? "text-teal-600 border-b-2 border-teal-600 bg-teal-50/50" : "text-slate-500 hover:text-sky-700"
+          }`}
+        >
+          <FileEdit className="w-4 h-4" /> Edit
+        </button>
+        <button
+          type="button"
+          onClick={() => setMobileTab("preview")}
+          className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors ${
+            mobileTab === "preview" ? "text-teal-600 border-b-2 border-teal-600 bg-teal-50/50" : "text-slate-500 hover:text-sky-700"
+          }`}
+        >
+          <Eye className="w-4 h-4" /> Preview
+        </button>
+      </div>
+
+      {/* Main: left form | right preview — side-by-side on md+, stacked tabs on mobile */}
       <main className="flex-1 flex min-h-0 w-full overflow-hidden">
         <aside
-          className="flex flex-col shrink-0 overflow-hidden border-r border-sky-200/80 bg-white/90 shadow-sm print:hidden"
-          style={{ width: "38%", maxWidth: 420, minWidth: 280 }}
+          className={`flex-col shrink-0 overflow-hidden border-r border-sky-200/80 bg-white/90 shadow-sm print:hidden
+            ${mobileTab === "form" ? "flex w-full" : "hidden"} md:flex md:w-[38%] md:max-w-[420px] md:min-w-[280px]`}
         >
           <div className="flex-1 overflow-y-auto p-4 min-h-0">
             <ResumeForm ref={formRef} key={formKey} data={data} onChange={setData} />
@@ -182,8 +208,11 @@ export default function Home() {
           </div>
         </aside>
 
-        {/* Right: live preview (no API calls); Download PDF uses browser print → Save as PDF */}
-        <section className="flex-1 flex flex-col min-w-0 overflow-hidden bg-sky-50/60 print:bg-white">
+        {/* Right: live preview */}
+        <section
+          className={`flex flex-col min-w-0 overflow-hidden bg-sky-50/60 print:bg-white print:block
+            ${mobileTab === "preview" ? "flex flex-1 w-full" : "hidden"} md:flex md:flex-1`}
+        >
           <div className="flex items-center justify-between px-4 py-2.5 border-b border-sky-200/80 bg-white shrink-0 print:hidden">
             <span className="text-sm font-semibold text-sky-800">Live preview</span>
           </div>

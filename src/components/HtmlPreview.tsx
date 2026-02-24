@@ -202,11 +202,9 @@ export function HtmlPreview({ data }: { data: ResumeData }) {
 
   return (
     <div
-      className="bg-white text-slate-800 rounded-lg shadow-xl p-6 mx-auto box-border overflow-hidden"
+      className="bg-white text-slate-800 rounded-lg shadow-xl p-4 sm:p-6 mx-auto box-border overflow-hidden w-full max-w-[210mm] print:w-[210mm]"
       style={{
-        width: "210mm",
         minHeight: "297mm",
-        maxWidth: "210mm",
         fontFamily: "Georgia, 'Times New Roman', serif",
         wordBreak: "break-word",
         overflowWrap: "break-word",
