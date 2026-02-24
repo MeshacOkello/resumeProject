@@ -29,7 +29,15 @@ function SortableItem({ id, children }: { id: string; children: React.ReactNode 
   );
 }
 
-export function SectionOrderDnd({ order, onChange }: { order: SectionOrder; onChange: (order: SectionOrder) => void }) {
+export function SectionOrderDnd({
+  order,
+  onChange,
+  compact = false,
+}: {
+  order: SectionOrder;
+  onChange: (order: SectionOrder) => void;
+  compact?: boolean;
+}) {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -45,21 +53,27 @@ export function SectionOrderDnd({ order, onChange }: { order: SectionOrder; onCh
     onChange(arrayMove(order, oldIndex, newIndex) as SectionOrder);
   };
 
+  const content = (
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <SortableContext items={order} strategy={verticalListSortingStrategy}>
+        <div className="space-y-1">
+          {order.map((id) => (
+            <SortableItem key={id} id={id}>
+              {id}
+            </SortableItem>
+          ))}
+        </div>
+      </SortableContext>
+    </DndContext>
+  );
+
+  if (compact) return content;
+
   return (
     <div className="rounded-lg border border-sky-200 bg-white p-4 shadow-sm">
       <h3 className="text-sm font-semibold text-sky-800 mb-2">Section order</h3>
       <p className="text-xs text-sky-500 mb-2">Drag to reorder sections in the PDF.</p>
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={order} strategy={verticalListSortingStrategy}>
-          <div className="space-y-1">
-            {order.map((id) => (
-              <SortableItem key={id} id={id}>
-                {id}
-              </SortableItem>
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
+      {content}
     </div>
   );
 }

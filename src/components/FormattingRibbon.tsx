@@ -3,7 +3,9 @@
 import React from "react";
 import { Download, FileCode, Loader2, Bold, Italic, Underline } from "lucide-react";
 import type { Theme } from "@/types/resume";
+import type { SectionOrder } from "@/types/resume";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
+import { SectionOrderPopover } from "./SectionOrderPopover";
 
 export type FormatType = "bold" | "italic" | "underline";
 
@@ -15,6 +17,8 @@ export interface FormattingRibbonProps {
   theme: Theme;
   onThemeChange: (t: Theme) => void;
   downloadCount?: number;
+  sectionOrder?: SectionOrder;
+  onSectionOrderChange?: (order: SectionOrder) => void;
   className?: string;
 }
 
@@ -26,6 +30,8 @@ export function FormattingRibbon({
   theme,
   onThemeChange,
   downloadCount = 0,
+  sectionOrder,
+  onSectionOrderChange,
   className = "",
 }: FormattingRibbonProps) {
   return (
@@ -99,6 +105,11 @@ export function FormattingRibbon({
             Compact
           </label>
         </div>
+        {sectionOrder && onSectionOrderChange && (
+          <div className="hidden md:block border-l border-sky-200 pl-3">
+            <SectionOrderPopover order={sectionOrder} onChange={onSectionOrderChange} />
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-2 flex-shrink-0">

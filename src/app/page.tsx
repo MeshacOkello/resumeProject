@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import { FileEdit, Eye } from "lucide-react";
+import { FileEdit, Eye, SlidersHorizontal } from "lucide-react";
 import { defaultResume, type ResumeData, type SectionOrder } from "@/types/resume";
 import { buildLatex } from "@/lib/build-latex";
 import { ResumeForm } from "@/components/ResumeForm";
-import { SectionOrderDnd } from "@/components/SectionOrderDnd";
+import { MobileToolsSheet } from "@/components/MobileToolsSheet";
 import { ATSScanner } from "@/components/ATSScanner";
 import { FormattingRibbon } from "@/components/FormattingRibbon";
 import { HtmlPreview } from "@/components/HtmlPreview";
@@ -75,6 +75,7 @@ export default function Home() {
   const [formKey, setFormKey] = useState(0);
   const [downloadCount, setDownloadCount] = useState(0);
   const [mobileTab, setMobileTab] = useState<MobileTab>("form");
+  const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
   const formRef = useRef<{ applyFormat: (type: "bold" | "italic" | "underline") => void } | null>(null);
 
   useEffect(() => {
@@ -168,11 +169,13 @@ export default function Home() {
         theme={data.theme}
         onThemeChange={handleTheme}
         downloadCount={downloadCount}
+        sectionOrder={data.sectionOrder}
+        onSectionOrderChange={handleSectionOrder}
       />
       </div>
 
-      {/* Mobile: tab switcher */}
-      <div className="md:hidden flex border-b border-sky-200/80 bg-white print:hidden">
+      {/* Mobile: tab switcher + Sections button */}
+      <div className="md:hidden flex items-stretch border-b border-sky-200/80 bg-white print:hidden">
         <button
           type="button"
           onClick={() => setMobileTab("form")}
@@ -191,7 +194,25 @@ export default function Home() {
         >
           <Eye className="w-4 h-4" /> Preview
         </button>
+        <button
+          type="button"
+          onClick={() => setMobileSheetOpen(true)}
+          className="flex items-center justify-center px-3 border-l border-sky-200/80 text-teal-600 hover:bg-teal-50 transition-colors touch-manipulation"
+          title="Sections & ATS"
+          aria-label="Sections & ATS"
+        >
+          <SlidersHorizontal className="w-5 h-5" />
+        </button>
       </div>
+
+      {/* Mobile: bottom sheet for Sections + ATS (doesn't block form) */}
+      <MobileToolsSheet
+        open={mobileSheetOpen}
+        onClose={() => setMobileSheetOpen(false)}
+        sectionOrder={data.sectionOrder}
+        onSectionOrderChange={handleSectionOrder}
+        resume={data}
+      />
 
       {/* Main: left form | right preview — side-by-side on md+, stacked tabs on mobile */}
       <main className="flex-1 flex min-h-0 w-full overflow-hidden">
@@ -202,8 +223,8 @@ export default function Home() {
           <div className="flex-1 overflow-y-auto p-4 min-h-0">
             <ResumeForm ref={formRef} key={formKey} data={data} onChange={setData} />
           </div>
-          <div className="p-3 border-t border-sky-200/80 bg-white space-y-3 shrink-0">
-            <SectionOrderDnd order={data.sectionOrder} onChange={handleSectionOrder} />
+          {/* Desktop: ATS scanner stays in sidebar (section order moved to toolbar) */}
+          <div className="hidden md:block p-3 border-t border-sky-200/80 bg-white shrink-0">
             <ATSScanner resume={data} />
           </div>
         </aside>
