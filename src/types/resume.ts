@@ -37,6 +37,7 @@ export const experienceEntrySchema = z.object({
 export const projectEntrySchema = z.object({
   id: z.string(),
   name: z.string(),
+  link: z.string().default(""),
   techStack: z.string(),
   dateRange: z.string(),
   dateRangeStart: z.string().default(""),
@@ -116,6 +117,7 @@ export const defaultExperienceEntry = (): ExperienceEntry => ({
 export const defaultProjectEntry = (): ProjectEntry => ({
   id: id(),
   name: "",
+  link: "",
   techStack: "",
   dateRange: "",
   dateRangeStart: "",

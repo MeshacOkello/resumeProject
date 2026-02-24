@@ -121,9 +121,21 @@ export function HtmlPreview({ data }: { data: ResumeData }) {
               .map((p) => (
                 <div key={p.id}>
                   <div className="flex justify-between gap-2 text-sm">
-                    <span className="font-semibold">
-                      {renderInline(p.name || "—", `proj-${p.id}-name`)}
-                    </span>
+                    <div>
+                      <span className="font-semibold">
+                        {renderInline(p.name || "—", `proj-${p.id}-name`)}
+                      </span>
+                      {p.link?.trim() && (
+                        <a
+                          href={p.link.startsWith("http") ? p.link : "https://" + p.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ml-1.5 text-[11px] italic text-sky-600 hover:text-sky-800 hover:underline"
+                        >
+                          {p.link.replace(/^https?:\/\//, "")}
+                        </a>
+                      )}
+                    </div>
                     <span className="text-slate-600 shrink-0">
                       {formatDateRange(p.dateRangeStart, p.dateRangeEnd, p.dateRange || "")}
                     </span>

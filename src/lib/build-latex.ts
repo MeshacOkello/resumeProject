@@ -4,8 +4,13 @@ import { formatDate, formatDateRange } from "./date-utils";
 
 function href(url: string, display: string): string {
   const u = url.startsWith("http") ? url : "https://" + url;
-  // Preserve simple inline commands like \textbf in the visible label
   return "\\href{" + u + "}{\\underline{" + escapeLatexPreserveCommands(display) + "}}";
+}
+
+/** Project link: smaller font, italic, no underline */
+function projectHref(url: string, display: string): string {
+  const u = url.startsWith("http") ? url : "https://" + url;
+  return "\\href{" + u + "}{\\textit{\\small " + escapeLatexPreserveCommands(display) + "}}";
 }
 
 function contactLine(data: ResumeData["personal"]): string {
@@ -163,8 +168,11 @@ export function buildLatex(data: ResumeData): string {
       "    \\resumeSubHeadingListStart\n";
     for (const p of projectEntries) {
       const dateStr = formatDateRange(p.dateRangeStart, p.dateRangeEnd, p.dateRange);
+      const linkPart = p.link?.trim()
+        ? " " + projectHref(p.link, p.link.replace(/^https?:\/\//, ""))
+        : "";
       const title =
-        "\\textbf{" + escapeLatexPreserveCommands(p.name) + "} $|$ \\emph{" + escapeLatexPreserveCommands(p.techStack) + "}";
+        "\\textbf{" + escapeLatexPreserveCommands(p.name) + "}" + linkPart + " $|$ \\emph{" + escapeLatexPreserveCommands(p.techStack) + "}";
       projectsBody +=
         "      \\resumeProjectHeading\n" +
         "          {" + title + "}{" + escapeLatexPreserveCommands(dateStr) + "}\n";

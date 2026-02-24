@@ -286,6 +286,11 @@ export const ResumeForm = forwardRef<ResumeFormHandle, { data: FormData; onChang
                 <RichTextInput value={values.projects?.[i]?.name ?? ""} onChange={(v) => setValue(`projects.${i}.name` as any, v)} onFocus={onFocusField(`projects.${i}.name`)} placeholder="Project name" className="flex-1 min-w-[140px] rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
                 <button type="button" onClick={() => { projects.remove(i); syncNow(); }} className="text-sky-500 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
               </div>
+              <input
+                {...register(`projects.${i}.link`)}
+                placeholder="Link (e.g. https://github.com/...)"
+                className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 placeholder-slate-400 focus:border-teal-500 focus:ring-1 focus:ring-teal-500"
+              />
               <input type="hidden" {...register(`projects.${i}.techStack`)} />
               <RichTextInput value={values.projects?.[i]?.techStack ?? ""} onChange={(v) => setValue(`projects.${i}.techStack` as any, v)} onFocus={onFocusField(`projects.${i}.techStack`)} placeholder="Tech stack" className="w-full rounded border border-sky-200 bg-white px-2 py-1.5 text-sm text-sky-900 focus:border-teal-500 focus:ring-1 focus:ring-teal-500" />
               <div className="flex gap-2">
