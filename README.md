@@ -14,6 +14,7 @@ Web-based resume generator with **Jake's LaTeX template**. Split-screen: structu
 - **Visibility**: Eye icon on each entry to hide/show in the export (keeps a “master list”).
 - **Theme**: Font (default, Roboto, Source Sans Pro), top margin, compact line spacing.
 - **Overflow warning**: Alert when content may spill to page 2.
+- **ATS match score**: Paste a job description; local TF-IDF cosine similarity (0–100%) — no AI/API.
 
 ## Requirements
 

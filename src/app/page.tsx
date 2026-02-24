@@ -5,6 +5,7 @@ import { defaultResume, type ResumeData, type SectionOrder } from "@/types/resum
 import { buildLatex } from "@/lib/build-latex";
 import { ResumeForm } from "@/components/ResumeForm";
 import { SectionOrderDnd } from "@/components/SectionOrderDnd";
+import { ATSScanner } from "@/components/ATSScanner";
 import { FormattingRibbon } from "@/components/FormattingRibbon";
 import { HtmlPreview } from "@/components/HtmlPreview";
 
@@ -177,6 +178,7 @@ export default function Home() {
           </div>
           <div className="p-3 border-t border-sky-200/80 bg-white space-y-3 shrink-0">
             <SectionOrderDnd order={data.sectionOrder} onChange={handleSectionOrder} />
+            <ATSScanner resume={data} />
           </div>
         </aside>
 
