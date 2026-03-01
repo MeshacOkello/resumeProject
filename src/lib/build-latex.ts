@@ -1,4 +1,4 @@
-import type { ResumeData } from "@/types/resume";
+type { ResumeData } from "@/types/resume";
 import { escapeLatex, escapeLatexPreserveCommands } from "./latex-escape";
 import { formatDateRange } from "./date-utils";
 
